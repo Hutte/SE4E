@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+
+<!-- <base href="/se4s_project/index"> -->
+
+<!-- Adding the viewport meta tag below, to ensure proper rendering and touch zooming -->
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SE4S Online Toolkit</title>
+
+<!--  Including CSS libraries -->
+<link rel="stylesheet" type="text/css" href="css/joint.css" />
+<link rel="stylesheet" type="text/css" href="css/bootstrap-theme.css" />
+<link rel="stylesheet" type="text/css" href="css/bootstrap.css" />
+<link rel="stylesheet" type="text/css" href="css/style.css" />
+
+
+<!--  Including JS libraries -->
+
+<script type="text/javascript" src="js/libs/angular.js"></script>
+<script type="text/javascript" src="js/libs/angular-route.js"></script>
+<script type="text/javascript" src="js/libs/angular-ui-router.js"></script>
+<script type="text/javascript" src="js/libs/angular-animate.js"></script>
+<script type="text/javascript" src="js/libs/ui-bootstrap-tpls-0.13.4.min.js"></script>
+<script type="text/javascript" src="js/libs/jquery.min.js"></script>
+<script type="text/javascript" src="js/libs/bootstrap.min.js"></script>
+<script type="text/javascript" src="js/libs/lodash.min.js"></script>
+<script type="text/javascript" src="js/libs/backbone-min.js"></script>
+<script type="text/javascript" src="js/libs/joint.js"></script>
+
+<!-- User Created JS files -->
+<!-- Added custom controllers -->
+<script type="text/javascript" src="js/app.js"></script>
+<script type="text/javascript" src="js/homepageController.js"></script>
+<script type="text/javascript" src="js/quickstart-guide-controller.js"></script>	
+<script type="text/javascript" src="js/userDetailsController.js"></script>
+<script type="text/javascript" src="js/accountPreferencesController.js"></script>
+<script type="text/javascript" src="js/forgotPasswordController.js"></script>
+	
+</head>
+<body data-ng-app="se4sToolkitApp" data-ng-controller="HomePageCtrl">
+	<div class="container-fluid">	
+		
+		<div id="topNavBar" style="background-color: lavender; z-index: 999; " 
+			class="container-fluid ng-scope globalHeader">
+			<ul class="nav nav-pills pull-right right" style="margin-top: 0.5%">
+				<li class="active"><a data-ui-sref="quickGuide">Home</a></li>				
+				<li><a data-ui-sref="examples">Examples</a></li>
+				<li><a data-ui-sref="editor">Online Editor</a></li>
+				<li><a data-ui-sref="forum">Forum</a></li>
+				<li><a data-ui-sref="about">About Us</a></li>
+				<li><a data-ui-sref="login">Login</a></li>
+			</ul>
+			<h3 class="text-info text-capitalize">SE4S Online Toolkit</h3>
+		</div>
+		
+		<div data-ui-view></div>
+		
+		<div class="row" data-ng-controller="QuickStartGuideCtrl">
+			<div class="col-xs-4">
+				<div data-ui-view="leftpanel"></div>
+			</div>
+			<div class="col-xs-6">
+				<div data-ui-view="rightpanel"></div>
+			</div>
+		</div>
+				
+		<!-- <div data-ui-view></div> -->		
+
+	</div>
+	<div>			
+		<h6 class="globalFooter text-center text-nowrap text-muted">&copy; 2015, CSU Long Beach</h6>
+	</div>
+</body>
+</html>
