@@ -10,7 +10,9 @@ se4sToolkitApp.config([ '$stateProvider', '$urlRouterProvider','$locationProvide
 	
 			$stateProvider.state('quickGuide', {
 				url : '/quickGuide',
-				views: {
+				templateUrl : 'html/re4s_guide.html',
+				controller : function($scope) {}
+				/*views: {
 					// The main template will be placed here (relatively named
 					//'' : { template : 'Hi! I am the main template'},
 					
@@ -18,25 +20,23 @@ se4sToolkitApp.config([ '$stateProvider', '$urlRouterProvider','$locationProvide
 					'leftpanel@' : {
 						templateUrl : 'html/re4s_guide.html',
 						controller : function($scope) {}
-					}, 
+					}
 					
 					'rightpanel@' : {
+						templateUrl : ['$stateParams', function($stateParams) {
+							return 'html/' + 'stepOneDetails' + '.html';
+						}],
 						templateUrl : 'html/stepOneDetails.html',
-						controller : function($scope) {}
-					}
-				},
+					    controller : function($scope) {}
+					}*
+				}, */
 				/*templateUrl : 'html/re4s_guide.html'*/
 			})
 			.state('examples', {
 				url : '/examples',
 				templateUrl : 'html/examples.html',
 				controller : function($scope) {}
-			})
-			.state('quickGuide.refDiag', {
-				url : '/refDiag',
-				templateUrl : 'html/refDiag.html',
-				controller : function($scope) {}
-			})
+			})			
 			.state('editor', {
 				url : '/editor',
 				templateUrl : 'html/editor.html',

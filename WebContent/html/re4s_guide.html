@@ -1,48 +1,58 @@
-<!-- <div id="centralViewport" class="row"> -->
-	<!-- <div class="col-xs-4"> -->
-		<p style="font-family: sans-serif; padding: 5%; font-size: 150%" >RE4S Quick Start Guide</p>			
+<div class="row" data-ng-controller="QuickStartGuideCtrl">
+	<div class="col-xs-4">
+		<p style="font-family: sans-serif; padding: 5%; font-size: 150%" >
+			RE4S Quick Start Guide
+		</p>			
 		<div>					
 			<accordion close-others="oneAtATime">					
-				<accordion-group is-open="status.isFirstOpen"> 
+				<accordion-group is-open="status.isFirstOpen" ng-click="loadDataAndTemplate('stepOneDetails')"> 
 					<accordion-heading>
-						Title 1 
-						<i class="pull-right glyphicon"  data-ng-class="{
-							'glyphicon-chevron-down': status.open, 
-							'glyphicon-chevron-right': !status.open}">
-						</i>
+						<div>
+							Title 1 
+							<i class="pull-right glyphicon"  data-ng-class="{
+								'glyphicon-chevron-down': status.open, 
+								'glyphicon-chevron-right': !status.open}">
+							</i>
+						</div>				
 					</accordion-heading> 
 					Content for sustainability step 1 
 				</accordion-group>
 				
-				<accordion-group> 
-					<accordion-heading>
-						Title 2
-						<i class="pull-right glyphicon"  data-ng-class="{
-							'glyphicon-chevron-down': status.open, 
-							'glyphicon-chevron-right': !status.open}">
-						</i>
+				<accordion-group ng-click="loadDataAndTemplate('stepTwoDetails')"> 
+					<accordion-heading ng-click="isopen=!isopen">
+						<div>
+							Title 2
+							<i class="pull-right glyphicon"  data-ng-class="{
+								'glyphicon-chevron-down': status.open, 
+								'glyphicon-chevron-right': !status.open}">
+							</i>
+						</div>				
 					</accordion-heading> 
 					Content for sustainability step 2
 				</accordion-group>
 				
-				<accordion-group> 
-					<accordion-heading>
-						Title 3
-						<i class="pull-right glyphicon"  data-ng-class="{
-							'glyphicon-chevron-down': status.open, 
-							'glyphicon-chevron-right': !status.open}">
-						</i>
+				<accordion-group ng-click="loadDataAndTemplate('stepThreeDetails')"> 
+					<accordion-heading ng-click="isopen=!isopen">
+						<div>
+							Title 3
+							<i class="pull-right glyphicon"  data-ng-class="{
+								'glyphicon-chevron-down': status.open, 
+								'glyphicon-chevron-right': !status.open}">
+							</i>
+						</div>				
 					</accordion-heading> 
 					Content for sustainability step 3
 				</accordion-group>
 				
-				<accordion-group> 
-					<accordion-heading>
-						Title 4
-						<i class="pull-right glyphicon"  data-ng-class="{
-							'glyphicon-chevron-down': status.open, 
-							'glyphicon-chevron-right': !status.open}">
-						</i>
+				<accordion-group ng-click="loadDataAndTemplate('stepFourDetails')"> 
+					<accordion-heading ng-click="isopen=!isopen">
+						<div>
+							Title 4
+							<i class="pull-right glyphicon"  data-ng-class="{
+								'glyphicon-chevron-down': status.open, 
+								'glyphicon-chevron-right': !status.open}">
+							</i>
+						</div>				
 					</accordion-heading> 
 					Content for sustainability step 4
 					<p>The body of the accordion group grows to fit the contents</p>
@@ -52,6 +62,9 @@
 				</accordion-group>
 			</accordion>
 		</div>
-	<!-- </div> -->
-	<!-- <div class="col-xs-6" data-ui-view></div> -->
-<!-- </div> -->
+	</div>
+	<div class="col-xs-6">
+		<!-- <div data-ui-view="rightpanel"></div> -->
+		<div data-ng-include src="template.url"><</div>
+	</div>
+</div>
