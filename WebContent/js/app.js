@@ -40,7 +40,7 @@ se4sToolkitApp.config([ '$stateProvider', '$urlRouterProvider','$locationProvide
 			.state('editor', {
 				url : '/editor',
 				templateUrl : 'html/editor.html',
-				controller : function($scope) {}
+				controller : 'OnlineEditorCtrl' 
 			})
 			.state('forum', {
 				url : '/forum',
