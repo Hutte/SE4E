@@ -1,6 +1,51 @@
 <div>
-<h1>
-<p> An online editor to create stakeholders model, goal models etc. that includes the sustainability
-aspect of software development. <p>
-</h1>
+	<!-- <h1>
+		<p>An online editor to create stakeholders model, goal models etc.
+			that includes the sustainability aspect of software development.
+		<p>
+	</h1> -->
+	<div class="container" style="width: 100%">
+		<div class="content row-fluid">
+			<div>
+				<div id="businessGoals" class="col-xs-4 span4">
+		            <div>Enter Business Goals</div>
+		            <div>
+		            	<fieldset data-ng-repeat="bg in businessGoals">
+					      <textarea ng-model="bg.name" cols="20" rows="2" name="" placeholder="Enter Business Goal" ngRequired>
+					      </textarea>
+					      <button class="remove" ng-click="removeBusinessGoal($index)">-</button>
+					   </fieldset>
+					   <button class="addfields btn btn-primary" ng-click="addBusinessGoal()">Add a New Goal</button>
+		            </div>	            
+		        </div>
+				<div id="systemGoals" class="col-xs-4 span4">
+		            <div>Enter System Goals</div>
+		            <div>
+		            	<fieldset data-ng-repeat="sg in systemGoals">
+					      <textarea ng-model="sg.name" cols="20" rows="2" name="" placeholder="Enter System Goal" ngRequired>
+					      </textarea>
+					      <button class="remove" ng-click="removeSystemGoal($index)">-</button>
+					   </fieldset>
+					   <button class="addfields btn btn-primary" ng-click="addSystemGoal()">Add a New Goal</button>
+		            </div>	 
+		        </div>
+		        <div id="usageGoals" class="col-xs-4 span4">
+		            <div>Enter Usage Goals</div>
+		            <div>
+		            	<fieldset data-ng-repeat="ug in usageGoals">
+					      <textarea ng-model="ug.name" cols="20" rows="2" name="" placeholder="Enter Usage Goal" ngRequired>
+					      </textarea>
+					      <button class="remove" ng-click="removeUsageGoal($index)">-</button>
+					   </fieldset>
+					   <button class="addfields btn btn-primary" ng-click="addUsageGoal()">Add a New Goal</button>
+		            </div>	 
+		        </div>
+			</div>			
+		</div>
+		<div id="show-model-btn" class="span4">
+            <button type="button" class="btn btn-primary" ng-model="singleModel" ng-click="displayGoalModel()">
+		        Display Goals Model
+		    </button>
+        </div>	
+	</div>
 </div>

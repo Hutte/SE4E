@@ -341,5 +341,41 @@ hr{
 }
 
 textarea{
-	min-height: 100px;
+	min-height: 10px;
+	max-width: 300px;
+	min-width: 50px;
+}
+
+/*
+Putting different goals in cells
+*/
+div.span4, div.span8, div.span12
+{
+    border: 1px solid #888;
+    border-radius:3px;
+    float:left;
+}
+
+/* Removing a goal */
+.remove{
+    background: #C76868;
+    color: #FFF;
+    font-weight: bold;
+    font-size: 30px;
+    border: 0;
+    cursor: pointer;
+    display: inline-block;
+    padding: 6px;
+    vertical-align: top;
+    line-height: 40%;   
+}
+
+.addfields{
+    margin: 10px 0;
+}
+
+fieldset{
+    background: #FCFCFC;
+    padding: 12px;
+    border: 1px solid #D5D5D5;
 }

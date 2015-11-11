@@ -291,21 +291,16 @@ $routeProvider.
 	});
 }]);*/
 
-/*contactsDirectoryApp.controller('ModalInstanceCtrl', function ($scope, $modalInstance, items) {
-	$scope.items = items;
-	$scope.selected = {
-		item: $scope.items[0]
-	};
-	
-	$scope.successMessage = items;
-	
-	$scope.ok = function () {
-		$modalInstance.close($scope.successMessage);
-	};
-	
-	$scope.cancel = function () {
-		$modalInstance.dismiss('cancel');
-	};
-});*/
+/*
+ * contactsDirectoryApp.controller('ModalInstanceCtrl', function ($scope,
+ * $modalInstance, items) { $scope.items = items; $scope.selected = { item:
+ * $scope.items[0] };
+ * 
+ * $scope.successMessage = items;
+ * 
+ * $scope.ok = function () { $modalInstance.close($scope.successMessage); };
+ * 
+ * $scope.cancel = function () { $modalInstance.dismiss('cancel'); }; });
+ */
 
 /*}());*/
