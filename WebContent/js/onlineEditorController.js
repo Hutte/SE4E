@@ -37,8 +37,46 @@ se4sToolkitApp.controller('OnlineEditorCtrl', [ '$scope', function($scope) {
 		$scope.usageGoals.splice(index, 1);
 	};
 	
+
+	$scope.saveToPc = function(data, filename) {
+
+		if (!data) {
+			console.error('No data');
+			return;
+		}
+	
+		if (!filename) {
+			filename = 'download.json';
+		}
+	
+		if (typeof data === 'object') {
+			data = JSON.stringify(data, undefined, 2);
+		}
+	
+		var blob = new Blob([ data ], {
+			type : 'text/json'
+		}), e = document.createEvent('MouseEvents'), a = document
+				.createElement('a');
+	
+		a.download = filename;
+		a.href = window.URL.createObjectURL(blob);
+		a.dataset.downloadurl = [ 'text/json', a.download, a.href ]
+				.join(':');
+		e.initMouseEvent('click', true, false, window, 0, 0, 0, 0, 0,
+				false, false, false, false, 0, null);
+		a.dispatchEvent(e);
+	};
+	
 	$scope.displayGoalModel = function() {
 		
+		$scope.goals = {
+			businessGoals : $scope.businessGoals,
+			systemGoals : $scope.systemGoals,
+			usageGoals : $scope.usageGoals			
+		}
+		console.log($scope.goals);
+		
+		$scope.saveToPc($scope.goals, 'goals.json');
 	}
 
 	/*
