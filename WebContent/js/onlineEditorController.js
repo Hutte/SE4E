@@ -3,6 +3,20 @@ se4sToolkitApp.controller('OnlineEditorCtrl', [ '$scope', function($scope) {
 	$scope.businessGoals = [];
 	$scope.systemGoals = [];
 	$scope.usageGoals = [];
+	
+	var goals = JSON.parse(localStorage.getItem("goals"));
+	
+	if (goals !== null && goals !== undefined) {
+		if (goals.businessGoals) {
+			$scope.businessGoals = goals.businessGoals;
+		}
+		if (goals.systemGoals) {
+			$scope.systemGoals = goals.systemGoals;
+		}
+		if (goals.usageGoals) {
+			$scope.usageGoals = goals.usageGoals;
+		}
+	}
 
 	$scope.addBusinessGoal = function() {
 		var newItemNo = $scope.businessGoals.length + 1;
@@ -76,53 +90,15 @@ se4sToolkitApp.controller('OnlineEditorCtrl', [ '$scope', function($scope) {
 		}
 		console.log($scope.goals);
 		
-		$scope.saveToPc($scope.goals, 'goals.json');
+		// Checking if browser supports local storage
+		if (typeof(Storage) !== "undefined") {
+			// Store the json in browser's local storage
+			localStorage.setItem("goals", JSON.stringify($scope.goals));
+		} else {
+			console.log("Sorry, No Web Storage Support Available on the browser!");
+		}
+		
+		var path = "tool.html";
+		window.location.href = path;		
 	}
-
-	/*
-	 * se4sToolkitApp.directive('jointDiagram', [function () {
-	 * 
-	 * var directive = { link: link, restrict: 'E', scope: { height: '=', width:
-	 * '=', gridSize: '=', graph: '=', } };
-	 * 
-	 * return directive;
-	 * 
-	 * function link(scope, element, attrs) {
-	 * 
-	 * var graph = new joint.dia.Graph; var paper = new joint.dia.Paper({ el :
-	 * $('#myholder'), model : graph, gridSize : 1 });
-	 * 
-	 * var rect = new joint.shapes.basic.Rect({ position : { x : 100, y : 30 },
-	 * size : { width : 100, height : 30 }, attrs : { rect : { fill : 'blue' },
-	 * text : { text : 'my box', fill : 'white' } } }); var rect2 =
-	 * rect.clone(); rect2.translate(300);
-	 * 
-	 * var link = new joint.dia.Link({ source : { id : rect.id }, target : { id :
-	 * rect2.id } });
-	 * 
-	 * graph.addCells([ rect, rect2, link ]);
-	 * 
-	 * var diagram = newDiagram(scope.height, scope.width, scope.gridSize,
-	 * scope.graph, element[0]); // add event handlers to interact with the
-	 * diagram diagram.on('cell:pointerclick', function (cellView, evt, x, y) { //
-	 * your logic here e.g. select the element
-	 * 
-	 * });
-	 * 
-	 * diagram.on('blank:pointerclick', function (evt, x, y) { // your logic
-	 * here e.g. unselect the element by clicking on a // blank part of the
-	 * diagram });
-	 * 
-	 * diagram.on('link:options', function (evt, cellView, x, y) { // your logic
-	 * here: e.g. select a link by its options tool }); }
-	 * 
-	 * function newDiagram(height, width, gridSize, graph, targetElement) {
-	 * 
-	 * var paper = new joint.dia.Paper({ el: targetElement, width: width,
-	 * height: height, gridSize: gridSize, model: graph, });
-	 * 
-	 * return paper; }
-	 * 
-	 * }]);
-	 */
-} ]);
+}]);
