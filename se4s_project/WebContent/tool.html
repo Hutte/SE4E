@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>JointJS Diagramming Library</title>
+
+<link rel="stylesheet" href="css/joint.css" />
+<link rel="stylesheet" type="text/css" href="css/bootstrap-theme.css" />
+<link rel="stylesheet" type="text/css" href="css/bootstrap.css" />
+<link rel="stylesheet" type="text/css" href="css/style.css" />
+
+<script type="text/javascript" src="js/libs/jquery.min.js"></script>
+<script type="text/javascript" src="js/libs/bootstrap.min.js"></script>
+<script type="text/javascript" src="js/libs/lodash.min.js"></script>
+<script type="text/javascript" src="js/libs/backbone-min.js"></script>
+<script type="text/javascript" src="js/libs/joint.js"></script>
+<script type="text/javascript" src="js/libs/html2canvas.js"></script>
+<script type="text/javascript" src="js/libs/jspdf.js"></script>
+<script type="text/javascript" src="js/libs/FileSaver.min.js"></script>
+<script type="text/javascript" src="js/libs/canvas-toBlob.js"></script>
+
+<script type="text/javascript" src="js/create-pdf.js"></script>
+
+
+<!-- <link href="joint.ui.stencil.css" rel="stylesheet" type="text/css" />
+<script src="joint.ui.stencil.js" type="text/javascript" ></script> -->
+</head>
+<body>
+	<div class="container" style="width: 100%">
+	    <div class="row">
+	    	<!-- <div id="pallette" class="col-xs-2" style="background-color: gray;">
+	    	 	<button id="create_pdf">Create PDF</button>
+	            <div  id="create_pdf" class="ui button aligned center teal">Create PDF</div>
+	        </div> -->
+	        <div id="goalModel" class="goalModel col-xs-12" style="width: 100%"></div>
+	        <!-- <div id="myholder-small" class="col-xs-6"></div> -->
+	    </div>
+	</div>
+	<!-- <div id="myholder"></div>
+	<div id="myholder-small"></div>
+	<div id="shapes"></div> -->
+	
+	<script type="text/javascript">
+		
+		var graph = new joint.dia.Graph();
+
+		var paper = new joint.dia.Paper({
+			el : $('#goalModel'),
+			width : 1240,
+			height : 600,
+			gridSize : 1,
+			model : graph,
+			perpendicularLinks : true,
+			restrictTranslate : true
+		});
+		
+		// Link two cells by dragging one over the other
+		// Listen on cell:pointerup and link to an element found below.
+		paper.on('cell:pointerup', function(cellView, evt, x, y) {
+
+		    // Find the first element below that is not a link nor the dragged element itself.
+		    var elementBelow = graph.get('cells').find(function(cell) {
+		        if (cell instanceof joint.dia.Link) return false; // Not interested in links.
+		        if (cell.id === cellView.model.id) return false; // The same element as the dropped one.
+		        if (cell.getBBox().containsPoint(g.point(x, y))) {
+		            return true;
+		        }
+		        return false;
+		    });
+		    
+		    // If the two elements are connected already, don't
+		    // connect them again (this is application specific though).
+		    if (elementBelow && !_.contains(graph.getNeighbors(elementBelow), cellView.model)) {
+		        
+		        graph.addCell(new joint.dia.Link({
+		            source: { id: cellView.model.id }, target: { id: elementBelow.id },
+		            attrs: { }
+		        }));
+		        // Move the element a bit to the side.
+		        cellView.model.translate(0, 200);
+		    }
+		});
+
+		var member = function(x, y, name, background, textColor) {
+
+			textColor = textColor || "#000";
+
+			var cell = new joint.shapes.org.Member({
+				position : {
+					x : x,
+					y : y
+				},
+				size: { width: 200, height: 80 },
+				attrs : {
+					'.card' : {
+						fill : background,
+						stroke : 'none'
+					},
+					'.name' : {
+						text : name,
+						fill : textColor,
+						'font-size' : 13,
+						'font-family' : 'Arial',
+						'letter-spacing' : 0
+					},
+					text : { 
+						magnet : true
+					}
+				}
+			});
+			graph.addCell(cell);
+			return cell;
+		};
+
+		function link(source, target, breakpoints) {
+
+			var cell = new joint.shapes.org.Arrow({
+				source : {
+					id : source.id
+				},
+				target : {
+					id : target.id
+				},
+				vertices : breakpoints,
+				attrs : {
+					'.connection' : {
+						'fill' : 'none',
+						'stroke-linejoin' : 'round',
+						'stroke-width' : '2',
+						'stroke' : '#4b4a67'
+					}
+				}
+
+			});
+			graph.addCell(cell);
+			return cell;
+		}
+		
+		// retrieve the goals back from local storage 
+		var goals = JSON.parse(localStorage.getItem("goals"));
+		console.log(goals);
+		
+		var businessGoals = goals.businessGoals;
+		console.log(businessGoals);
+		
+		var systemGoals = goals.systemGoals;
+		console.log(systemGoals);
+		
+		var usageGoals = goals.usageGoals;
+		console.log(usageGoals);
+		
+		var x = 200, y = 70, x_dist = 250, y_dist = 150;
+		var bg = new Array(), sg = new Array(), ug = new Array();		
+		
+		for (var i=0; i<businessGoals.length; i++) {
+			console.log(businessGoals[i].name);
+			bg[i] = member(x + i*x_dist, y, businessGoals[i].name, '#30d0c6');			
+		}
+		
+		for (var i=0; i<systemGoals.length; i++) {
+			console.log(systemGoals[i].name);
+			sg[i] = member(x + i*x_dist, y + y_dist, systemGoals[i].name, '#7c68fd');
+		}
+		
+		for (var i=0; i<usageGoals.length; i++) {
+			console.log(usageGoals[i].name);
+			ug[i] = member(x + i*x_dist, y + 2*y_dist, usageGoals[i].name, '#feb563');;
+		}
+		
+		/* for (bg in businessGoals) {
+			console.log(bg);
+		}
+		
+		for (sg in systemGoals) {
+			console.log(sg);
+		}
+		
+		for (ug in usageGoals) {
+			console.log(ug);
+		} */
+
+		/* var bg1 = member(x, y, 'Business_Goal_01', '#30d0c6');
+		var bg2 = member(x + x_dist, y, 'Business_Goal_02', '#30d0c6');
+		var bg3 = member(x + 2*x_dist, y, 'Business_Goal_03', '#30d0c6');
+		
+		var sg1 = member(x, y + y_dist, 'System_Goal_01', '#7c68fd');
+		var sg2 = member(x + x_dist, y + y_dist, 'System_Goal_02', '#7c68fd');
+		var sg3 = member(x + 2*x_dist, y + y_dist, 'System_Goal_03', '#7c68fd');
+		
+		var ug1 = member(x, y + 2*y_dist, 'Usage_Goal_01', '#feb563');
+		var ug2 = member(x + x_dist, y + 2*y_dist, 'Usage_Goal_02', '#feb563');
+		var ug3 = member(x + 2*x_dist, y + 2*y_dist, 'Usage_Goal_03', '#feb563'); */
+		
+		
+		/* var homer = member(90, 200, 'VP Marketing', 'Homer Simpson',
+				'male.png', '#7c68fd', '#f1f1f1');
+		var marge = member(300, 200, 'VP Sales', 'Marge Simpson', 'female.png',
+				'#7c68fd', '#f1f1f1');
+		var lisa = member(500, 200, 'VP Production', 'Lisa Simpson',
+				'female.png', '#7c68fd', '#f1f1f1');
+		var maggie = member(400, 350, 'Manager', 'Maggie Simpson',
+				'female.png', '#feb563');
+		var lenny = member(190, 350, 'Manager', 'Lenny Leonard', 'male.png',
+				'#feb563');
+		var carl = member(190, 500, 'Manager', 'Carl Carlson', 'male.png',
+				'#feb563'); */
+
+		/* link(bart, marge);
+		link(bart, homer, [ {
+			x : 385,
+			y : 180
+		}, {
+			x : 175,
+			y : 180
+		} ]);
+		link(bart, lisa, [ {
+			x : 385,
+			y : 180
+		}, {
+			x : 585,
+			y : 180
+		} ]);
+		link(homer, lenny, [ {
+			x : 175,
+			y : 380
+		} ]);
+		link(homer, carl, [ {
+			x : 175,
+			y : 530
+		} ]);
+		link(marge, maggie, [ {
+			x : 385,
+			y : 380
+		} ]); */
+	</script>
+	
+	
+	<!-- <script type="text/javascript">
+		
+	var graph = new joint.dia.Graph;
+	
+	// Event handling
+    // Below line outputs all the events to the console that are triggered by any model in the graph
+    /* graph.on('all', function(eventName, cell) {
+    	console.log(arguments);
+    }); */
+
+    var paper = new joint.dia.Paper({
+        el: $('#myholder'),
+        model: graph,
+        width: 1000,
+        height: 400,
+        gridSize: 1
+    });
+    
+    var paperSmall = new joint.dia.Paper({
+        el: $('#myholder-small'),
+        width: 600,
+        height: 100,
+        model: graph,
+        gridSize: 1
+    });
+    paperSmall.scale(.5);
+    //paperSmall.$el.css('pointer-events', 'none');
+
+    var rect_conf = {
+        position: { x: 100, y: 30 },
+        size: { width: 100, height: 30 },
+        attrs: { rect: { fill: 'white', rx: 5, ry: 5, 'stroke-width': 2, stroke: 'black'}, 
+        text: { text: '', fill: 'black' } }
+    };
+    
+    var rect = new joint.shapes.basic.Rect(rect_conf);
+    
+    /* var rect = new joint.shapes.basic.Rect({
+        position: { x: 100, y: 30 },
+        size: { width: 100, height: 30 },
+        attrs: { rect: { fill: 'white', rx: 5, ry: 5, 'stroke-width': 2, stroke: 'black'}, 
+        text: { text: 'my box', fill: 'black' } }
+    }); */
+    
+    // Log the event of change in position of the rect
+    rect.on('change:position', function(element) {
+    	console.log(element.id, ':', element.get('position'));
+    })
+
+    var rect2 = rect.clone();
+    rect2.translate(300);
+
+    var link = new joint.dia.Link({
+        source: { id: rect.id },
+        target: { id: rect2.id }
+    });
+    
+    link.attr({
+    	'.connection': {stroke: 'green'},
+    	'.marker-target': {fill: 'black', d: 'M 10 0 L 0 5 L 10 10 z'}
+    });            
+    
+    // link.set('vertices', [{ x: 300, y: 60 }, { x: 400, y: 60 }, { x: 400, y: 20 }])
+
+    graph.addCells([rect, rect2, link]);
+
+	</script> -->
+</body>
+</html>
