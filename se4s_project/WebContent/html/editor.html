@@ -2,49 +2,6 @@
 <div class="container span4" style="width: 100%;">
 	<div id="show-model-btn" class="span4" style="float: left; width: 100%; border-style:none; padding-top: 5px; padding-bottom: 5px">
 		<button type="button" class="btn btn-primary pull-right right" ng-model="singleModel" ng-click="displayGoalModel()">
-			Display Goals Model 
-		</button>
-	</div>
-	<div class="content row-fluid">
-		<div id="businessGoals" class="col-xs-4">
-            <div>Enter Business Goals</div>            
-            <div>
-            	<fieldset data-ng-repeat="bg in businessGoals">
-			      <textarea data-ng-model="bg.name" cols="70" rows="2" name="" placeholder="Enter Business Goal" ngRequired>
-			      </textarea>
-			      <button class="remove" data-ng-click="removeBusinessGoal($index)">-</button>
-			   </fieldset>
-			   <button class="addfields btn btn-primary" data-ng-click="addBusinessGoal()">Add a New Goal</button>
-            </div>	            
-        </div>
-		<div id="systemGoals" class="col-xs-4">
-            <div>Enter System Goals</div>
-            <div>
-            	<fieldset data-ng-repeat="sg in systemGoals">
-			      <textarea data-ng-model="sg.name" cols="70" rows="2" name="" placeholder="Enter System Goal" ngRequired>
-			      </textarea>
-			      <button class="remove" data-ng-click="removeSystemGoal($index)">-</button>
-			   </fieldset>
-			   <button class="addfields btn btn-primary" data-ng-click="addSystemGoal()">Add a New Goal</button>
-            </div>	 
-        </div>
-        <div id="usageGoals" class="col-xs-4">
-            <div>Enter Usage Goals</div>
-            <div>
-            	<fieldset data-ng-repeat="ug in usageGoals">
-			      <textarea data-ng-model="ug.name" cols="70" rows="2" name="" placeholder="Enter Usage Goal" ngRequired>
-			      </textarea>
-			      <button class="remove" data-ng-click="removeUsageGoal($index)">-</button>
-			   </fieldset>
-			   <button class="addfields btn btn-primary" data-ng-click="addUsageGoal()">Add a New Goal</button>
-            </div>	 
-        </div>
-	</div>
-</div>
-
-<div class="container span4" style="width: 100%;">
-	<div id="show-model-btn" class="span4" style="float: left; width: 100%; border-style:none; padding-top: 5px; padding-bottom: 5px">
-		<button type="button" class="btn btn-primary pull-right right" ng-model="singleModel" ng-click="displayGoalModel()">
 			Display Goals Model
 		</button>
 	</div>
