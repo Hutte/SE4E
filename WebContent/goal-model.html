@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>JointJS Diagramming Library</title>
+
+<link rel="stylesheet" href="css/joint.css" />
+<link rel="stylesheet" type="text/css" href="css/bootstrap-theme.css" />
+<link rel="stylesheet" type="text/css" href="css/bootstrap.css" />
+<link rel="stylesheet" type="text/css" href="css/style.css" />
+
+<script type="text/javascript" src="js/libs/jquery.min.js"></script>
+<script type="text/javascript" src="js/libs/bootstrap.min.js"></script>
+<script type="text/javascript" src="js/libs/lodash.min.js"></script>
+<script type="text/javascript" src="js/libs/backbone-min.js"></script>
+<script type="text/javascript" src="js/libs/joint.js"></script>
+<script type="text/javascript" src="js/libs/html2canvas.js"></script>
+<script type="text/javascript" src="js/libs/jspdf.js"></script>
+<script type="text/javascript" src="js/libs/FileSaver.min.js"></script>
+<script type="text/javascript" src="js/libs/canvas-toBlob.js"></script>
+
+<script type="text/javascript" src="js/libs/html2canvas.js"></script>
+<script type="text/javascript" src="js/libs/jspdf.js"></script>
+<script type="text/javascript" src="js/libs/jspdf.plugin.addimage.js"></script>
+<script type="text/javascript" src="js/libs/FileSaver.js"></script>
+<script type="text/javascript" src="js/libs/FileSaver.min.js"></script>
+<script type="text/javascript" src="js/libs/canvas-toBlob.js"></script>
+<script type="text/javascript" src="html2pdf-app.js"></script>
+
+<script type="text/javascript" src="create-pdf.js"></script>
+
+
+<!-- <link href="joint.ui.stencil.css" rel="stylesheet" type="text/css" />
+<script src="joint.ui.stencil.js" type="text/javascript" ></script> -->
+</head>
+<body>
+	<div class="container" style="width: 100%">
+	    <div class="row">
+	    	<div id="pallette" class="pull-right">
+	    	 	<button class="btn-primary" id="create_pdf" onclick="createPDF()">Create PDF</button>
+	    	 	<button id="email" class="btn-primary">Email</button>
+	            <!-- <div id="create_pdf" class="ui button aligned center teal">Create PDF</div> -->
+	        </div>
+	        <div id="goalModel" class="goalModel col-xs-12" style="width: 100%"></div>
+	        <!-- <div id="myholder-small" class="col-xs-6"></div> -->
+	    </div>
+	</div>
+	<!-- <div id="myholder"></div>
+	<div id="myholder-small"></div>
+	<div id="shapes"></div> -->
+	
+	<script type="text/javascript">
+	
+		var graph = new joint.dia.Graph();
+
+		var paper = new joint.dia.Paper({
+			el : $('#goalModel'),
+			width : 1240,
+			height : 600,
+			gridSize : 1,
+			model : graph,
+			perpendicularLinks : true,
+			restrictTranslate : true
+		});
+		
+		// Handle all the events on the graph
+		graph.on('all', function(eventName, cell) {
+			if (typeof (Storage) !== "undefined") {
+				// convert graph to json
+				var jsonGraph = JSON.stringify(graph.toJSON());
+
+				// Store the json in browser's local storage
+				localStorage.setItem("jsonGraph", jsonGraph);
+			} else {
+				console.log("Sorry, No Web Storage Support Available on the browser!");
+			}
+		});
+
+		// Link two cells by dragging one over the other
+		// Listen on cell:pointerup and link to an element found below.
+		paper.on('cell:pointerup', function(cellView, evt, x, y) {
+
+			// Find the first element below that is not a link nor the dragged element itself.
+			var elementBelow = graph.get('cells').find(function(cell) {
+				if (cell instanceof joint.dia.Link)
+					return false; // Not interested in links.
+				if (cell.id === cellView.model.id)
+					return false; // The same element as the dropped one.
+				if (cell.getBBox().containsPoint(g.point(x, y))) {
+					return true;
+				}
+				return false;
+			});
+
+			// If the two elements are connected already, don't
+			// connect them again
+			if (elementBelow
+					&& !_.contains(graph.getNeighbors(elementBelow),
+							cellView.model)) {
+
+				graph.addCell(new joint.dia.Link({
+					source : {
+						id : cellView.model.id
+					},
+					target : {
+						id : elementBelow.id
+					},
+					attrs : {}
+				}));
+				// Move the element a bit to the side.
+				cellView.model.translate(0, 150);
+			}
+		});
+
+		var member = function(x, y, name, background, textColor) {
+
+			textColor = textColor || "#000";
+
+			var cell = new joint.shapes.org.Member({
+				position : {
+					x : x,
+					y : y
+				},
+				size : {
+					width : 200,
+					height : 80
+				},
+				attrs : {
+					'.card' : {
+						fill : background,
+						stroke : 'none'
+					},					
+					text : {
+						text : name,
+						'font-size': 12,
+			            'ref': 'rect',
+			            'ref-x': .5,
+			            'ref-y': .5,
+			            'y-alignment': 'middle',
+			            'x-alignment': '', // disable x-alignment inherited from basic.Rect
+			            'text-anchor': 'middle'
+					}
+				}
+			});
+			graph.addCell(cell);
+			return cell;
+		};
+
+		function link(source, target, breakpoints) {
+
+			var cell = new joint.shapes.org.Arrow({
+				source : {
+					id : source.id
+				},
+				target : {
+					id : target.id
+				},
+				vertices : breakpoints,
+				attrs : {
+					'.connection' : {
+						'fill' : 'none',
+						'stroke-linejoin' : 'round',
+						'stroke-width' : '2',
+						'stroke' : '#4b4a67'
+					}
+				}
+
+			});
+			graph.addCell(cell);
+			return cell;
+		}
+
+		var dim_x = 100, dim_y = 15, dim_x_dist = 200;
+		
+		var sustDimensions = function(x, y, dimension_name) {
+			var rect = new joint.shapes.basic.Rect({
+				position : {
+					x : x,
+					y : y
+				},
+				size : {
+					width : 180,
+					height : 30
+				},
+				attrs : {
+					rect : {
+						fill : 'white',
+						rx : 5,
+						ry : 5,
+						'stroke-width' : 2,
+						stroke : 'black'
+					},
+					text : {
+						text : dimension_name,
+						fill : 'black'
+					}
+				}
+			});
+			graph.addCell(rect);
+		};
+		
+		if (typeof(Storage) !== "undefined") {
+			// Try to retrieve the graph from JSON storage			
+			jsonGraph = localStorage.getItem("jsonGraph");
+			
+			if (jsonGraph !== null && jsonGraph !== undefined) {
+				graph = graph.fromJSON(JSON.parse(jsonGraph));
+			}
+			
+			var elements = graph.getElements();
+			
+			sustainabilityDimensions = [ 'Individual Sustainability',
+					'Social Sustainability', 'Economic Sustainability',
+					'Enviornmental Sust.', 'Technical Sust.' ];
+			for (var goalTitles = 0; goalTitles < 5; goalTitles++) {
+				sustDimensions(dim_x + goalTitles * dim_x_dist, dim_y,
+						sustainabilityDimensions[goalTitles]);
+			}
+
+			// retrieve the goals back from local storage 
+			var goals = JSON.parse(localStorage.getItem("goals"));
+			console.log(goals);
+
+			var businessGoals = goals.businessGoals;
+			console.log(businessGoals);
+
+			var systemGoals = goals.systemGoals;
+			console.log(systemGoals);
+
+			var usageGoals = goals.usageGoals;
+			console.log(usageGoals);
+
+			var x = 100, y = 70, x_dist = 250, y_dist = 150;
+
+			var bg = new Array(), sg = new Array(), ug = new Array();
+
+			for (var i = 0; i < businessGoals.length; i++) {
+				var b_goal = joint.util.breakText(businessGoals[i].name, {
+					width : 150,
+					height : 50
+				});
+				var is_it_there = 0;
+				if (elements !== null && elements !== undefined && elements.length !== 0) {
+					for (var index = 0; index < elements.length; index++) {
+						
+						if (elements[index].attributes.type === 'org.Member' && elements[index].attributes.attrs['.card'].fill === '#30d0c6') {
+							
+							/* console.log(b_goal.toLowerCase() === elements[index].attributes.attrs.text.text.toLowerCase())
+							console.log(elements[index].attributes.attrs.text.text.toLowerCase()); */
+							
+							if (b_goal.toLowerCase() === elements[index].attributes.attrs.text.text.toLowerCase()) {
+								is_it_there = 1;
+								break;								
+							}				
+						}							
+					}
+					//console.log('Is it there : '+is_it_there);
+					if (is_it_there === 0) {
+						bg[i] = member(x + i * x_dist, y, b_goal, '#30d0c6');
+					}
+					
+				} else {
+					bg[i] = member(x + i * x_dist, y, b_goal, '#30d0c6');
+				}
+			}
+			
+			if (elements !== null && elements !== undefined && elements.length !== 0) {
+				
+				for (var index = 0; index < elements.length; index++) {
+					
+					var is_it_there = 0;
+					
+					if (elements[index].attributes.type === 'org.Member' && elements[index].attributes.attrs['.card'].fill === '#30d0c6') {
+						
+						for (var i = 0; i < businessGoals.length; i++) {
+							
+							var b_goal = joint.util.breakText(businessGoals[i].name, {
+								width : 150,
+								height : 50
+							});
+								
+							console.log(b_goal.toLowerCase() === elements[index].attributes.attrs.text.text.toLowerCase())
+							console.log(elements[index].attributes.attrs.text.text.toLowerCase());
+							
+							if (b_goal.toLowerCase() === elements[index].attributes.attrs.text.text.toLowerCase()) {
+								is_it_there = 1;
+								break;								
+							} 	
+						}
+						
+						console.log('Is '+elements[index].attributes.attrs.text.text+' :: '+ is_it_there);
+						
+						if (is_it_there == 0) {
+							elements[index].remove();
+						}						
+					}					
+				}				
+			}
+
+			for (var i = 0; i < systemGoals.length; i++) {
+				var s_goal = joint.util.breakText(systemGoals[i].name, {
+					width : 150,
+					height : 50
+				});				
+				if (elements !== null && elements !== undefined && elements.length !== 0) {
+					for (var index = 0; index < elements.length; index++) {
+						if (elements[index].attributes.type!== 'org.Member') {
+							/* console.log(elements[index].attributes.attrs.text.text.toLowerCase() === s_goal.toLowerCase())
+							console.log(elements[index].attributes.attrs.text.text.toLowerCase()); */
+							if (elements[index].attributes.attrs.text.text.toLowerCase() === s_goal.toLowerCase()) {
+								sg[i] = member(x + i * x_dist, y + y_dist, s_goal, '#7c68fd');
+							}								
+						}							
+					}	
+				} else {
+					sg[i] = member(x + i * x_dist, y + y_dist, s_goal, '#7c68fd');
+				}
+			}
+
+			for (var i = 0; i < usageGoals.length; i++) {
+				
+				var u_goal = joint.util.breakText(usageGoals[i].name, {
+					width : 150,
+					height : 50
+				});				
+				if (elements !== null && elements !== undefined && elements.length !== 0) {
+					for (var index = 0; index < elements.length; index++) {
+						if (elements[index].attributes.type!== 'org.Member') {
+							/* console.log(elements[index].attributes.attrs.text.text.toLowerCase() === u_goal.toLowerCase())
+							console.log(elements[index].attributes.attrs.text.text.toLowerCase()); */
+							if (elements[index].attributes.attrs.text.text.toLowerCase() === u_goal.toLowerCase()) {
+								ug[i] = member(x + i * x_dist, y + 2 * y_dist, u_goal, '#feb563');
+							}								
+						}							
+					}	
+				} else {
+					ug[i] = member(x + i * x_dist, y + 2 * y_dist, u_goal, '#feb563');
+				}
+			}
+
+		} else {
+			console.log("Sorry, No Web Storage Support Available on the browser!");
+		}
+
+		/* sustainabilityDimensions = [ 'Individual Sustainability',
+				'Social Sustainability', 'Economic Sustainability',
+				'Enviornmental Sust.', 'Technical Sust.' ];
+		for (var goalTitles = 0; goalTitles < 5; goalTitles++) {
+			sustDimensions(dim_x + goalTitles * dim_x_dist, dim_y,
+					sustainabilityDimensions[goalTitles]);
+		}
+
+		// retrieve the goals back from local storage 
+		var goals = JSON.parse(localStorage.getItem("goals"));
+		console.log(goals);
+
+		var businessGoals = goals.businessGoals;
+		console.log(businessGoals);
+
+		var systemGoals = goals.systemGoals;
+		console.log(systemGoals);
+
+		var usageGoals = goals.usageGoals;
+		console.log(usageGoals);
+
+		var x = 100, y = 70, x_dist = 250, y_dist = 150;
+
+		var bg = new Array(), sg = new Array(), ug = new Array();
+
+		for (var i = 0; i < businessGoals.length; i++) {
+			console.log(businessGoals[i].name);
+			bg[i] = member(x + i * x_dist, y, businessGoals[i].name, '#30d0c6');
+		}
+
+		for (var i = 0; i < systemGoals.length; i++) {
+			console.log(systemGoals[i].name);
+			sg[i] = member(x + i * x_dist, y + y_dist, systemGoals[i].name,
+					'#7c68fd');
+		}
+
+		for (var i = 0; i < usageGoals.length; i++) {
+			console.log(usageGoals[i].name);
+			ug[i] = member(x + i * x_dist, y + 2 * y_dist, usageGoals[i].name,
+					'#feb563');
+			;
+		} */
+	</script>
+</body>
+</html>
