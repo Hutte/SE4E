@@ -205,17 +205,17 @@
 			
 			if (jsonGraph !== null && jsonGraph !== undefined) {
 				graph = graph.fromJSON(JSON.parse(jsonGraph));
+			} else {				
+				sustainabilityDimensions = [ 'Individual Sustainability',
+								'Social Sustainability', 'Economic Sustainability',
+								'Enviornmental Sust.', 'Technical Sust.' ];
+						for (var goalTitles = 0; goalTitles < 5; goalTitles++) {
+							sustDimensions(dim_x + goalTitles * dim_x_dist, dim_y,
+									sustainabilityDimensions[goalTitles]);
+				}
 			}
-			
+
 			var elements = graph.getElements();
-			
-			sustainabilityDimensions = [ 'Individual Sustainability',
-					'Social Sustainability', 'Economic Sustainability',
-					'Enviornmental Sust.', 'Technical Sust.' ];
-			for (var goalTitles = 0; goalTitles < 5; goalTitles++) {
-				sustDimensions(dim_x + goalTitles * dim_x_dist, dim_y,
-						sustainabilityDimensions[goalTitles]);
-			}
 
 			// retrieve the goals back from local storage 
 			var goals = JSON.parse(localStorage.getItem("goals"));
@@ -234,70 +234,129 @@
 
 			var bg = new Array(), sg = new Array(), ug = new Array();
 
+			// Creating/Adding Business goals
 			for (var i = 0; i < businessGoals.length; i++) {
-				var b_goal = joint.util.breakText(businessGoals[i].name, {
+				var goal = joint.util.breakText(businessGoals[i].name, {
 					width : 150,
 					height : 50
 				});
 				var is_it_there = 0;
-				if (elements !== null && elements !== undefined && elements.length !== 0) {
+				if (elements !== null && elements !== undefined
+						&& elements.length !== 0) {
 					for (var index = 0; index < elements.length; index++) {
-						
-						if (elements[index].attributes.type === 'org.Member' && elements[index].attributes.attrs['.card'].fill === '#30d0c6') {
-							
-							/* console.log(b_goal.toLowerCase() === elements[index].attributes.attrs.text.text.toLowerCase())
-							console.log(elements[index].attributes.attrs.text.text.toLowerCase()); */
-							
-							if (b_goal.toLowerCase() === elements[index].attributes.attrs.text.text.toLowerCase()) {
+						if (elements[index].attributes.type === 'org.Member'
+								&& elements[index].attributes.attrs['.card'].fill === '#30d0c6') {
+							if (goal.toLowerCase() === elements[index].attributes.attrs.text.text
+									.toLowerCase()) {
 								is_it_there = 1;
-								break;								
-							}				
-						}							
+								break;
+							}
+						}
+					}
+					if (is_it_there === 0) {
+						bg[i] = member(x + i * x_dist, y, goal, '#30d0c6');
+					}
+				} else {
+					bg[i] = member(x + i * x_dist, y, goal, '#30d0c6');
+				}
+			}
+
+			// Deleting Old Business Goals deleted by the user
+			if (elements !== null && elements !== undefined
+					&& elements.length !== 0) {
+
+				for (var index = 0; index < elements.length; index++) {
+
+					var is_it_there = 0;
+
+					if (elements[index].attributes.type === 'org.Member'
+							&& elements[index].attributes.attrs['.card'].fill === '#30d0c6') {
+
+						for (var i = 0; i < businessGoals.length; i++) {
+
+							var b_goal = joint.util.breakText(
+									businessGoals[i].name, {
+										width : 150,
+										height : 50
+									});
+							if (b_goal.toLowerCase() === elements[index].attributes.attrs.text.text
+									.toLowerCase()) {
+								is_it_there = 1;
+								break;
+							}
+						}
+						if (is_it_there == 0) {
+							elements[index].remove();
+						}
+					}
+				}
+			}
+
+			// Creating/Adding System goals
+			for (var i = 0; i < systemGoals.length; i++) {
+				var goal = joint.util.breakText(systemGoals[i].name, {
+					width : 150,
+					height : 50
+				});
+				var is_it_there = 0;
+				if (elements !== null && elements !== undefined
+						&& elements.length !== 0) {
+					for (var index = 0; index < elements.length; index++) {
+
+						if (elements[index].attributes.type === 'org.Member'
+								&& elements[index].attributes.attrs['.card'].fill === '#7c68fd') {
+
+							if (goal.toLowerCase() === elements[index].attributes.attrs.text.text
+									.toLowerCase()) {
+								is_it_there = 1;
+								break;
+							}
+						}
 					}
 					//console.log('Is it there : '+is_it_there);
 					if (is_it_there === 0) {
-						bg[i] = member(x + i * x_dist, y, b_goal, '#30d0c6');
+						sg[i] = member(x + i * x_dist, y + y_dist, goal,
+								'#7c68fd');
 					}
-					
+
 				} else {
-					bg[i] = member(x + i * x_dist, y, b_goal, '#30d0c6');
+					sg[i] = member(x + i * x_dist, y + y_dist, goal, '#7c68fd');
 				}
 			}
-			
-			if (elements !== null && elements !== undefined && elements.length !== 0) {
-				
+
+			// Deleting Old System Goals which are deleted by the user
+			if (elements !== null && elements !== undefined
+					&& elements.length !== 0) {
+
 				for (var index = 0; index < elements.length; index++) {
-					
+
 					var is_it_there = 0;
-					
-					if (elements[index].attributes.type === 'org.Member' && elements[index].attributes.attrs['.card'].fill === '#30d0c6') {
-						
-						for (var i = 0; i < businessGoals.length; i++) {
-							
-							var b_goal = joint.util.breakText(businessGoals[i].name, {
-								width : 150,
-								height : 50
-							});
-								
-							console.log(b_goal.toLowerCase() === elements[index].attributes.attrs.text.text.toLowerCase())
-							console.log(elements[index].attributes.attrs.text.text.toLowerCase());
-							
-							if (b_goal.toLowerCase() === elements[index].attributes.attrs.text.text.toLowerCase()) {
+
+					if (elements[index].attributes.type === 'org.Member'
+							&& elements[index].attributes.attrs['.card'].fill === '#7c68fd') {
+
+						for (var i = 0; i < systemGoals.length; i++) {
+
+							var goal = joint.util.breakText(
+									systemGoals[i].name, {
+										width : 150,
+										height : 50
+									});
+
+							if (goal.toLowerCase() === elements[index].attributes.attrs.text.text
+									.toLowerCase()) {
 								is_it_there = 1;
-								break;								
-							} 	
+								break;
+							}
 						}
-						
-						console.log('Is '+elements[index].attributes.attrs.text.text+' :: '+ is_it_there);
-						
 						if (is_it_there == 0) {
 							elements[index].remove();
-						}						
-					}					
-				}				
+						}
+					}
+				}
 			}
 
-			for (var i = 0; i < systemGoals.length; i++) {
+			/* for (var i = 0; i < systemGoals.length; i++) {
 				var s_goal = joint.util.breakText(systemGoals[i].name, {
 					width : 150,
 					height : 50
@@ -305,8 +364,8 @@
 				if (elements !== null && elements !== undefined && elements.length !== 0) {
 					for (var index = 0; index < elements.length; index++) {
 						if (elements[index].attributes.type!== 'org.Member') {
-							/* console.log(elements[index].attributes.attrs.text.text.toLowerCase() === s_goal.toLowerCase())
-							console.log(elements[index].attributes.attrs.text.text.toLowerCase()); */
+							console.log(elements[index].attributes.attrs.text.text.toLowerCase() === s_goal.toLowerCase())
+							console.log(elements[index].attributes.attrs.text.text.toLowerCase()); 
 							if (elements[index].attributes.attrs.text.text.toLowerCase() === s_goal.toLowerCase()) {
 								sg[i] = member(x + i * x_dist, y + y_dist, s_goal, '#7c68fd');
 							}								
@@ -315,9 +374,73 @@
 				} else {
 					sg[i] = member(x + i * x_dist, y + y_dist, s_goal, '#7c68fd');
 				}
+			} */
+
+			// Creating/Adding Usage goals
+			for (var i = 0; i < usageGoals.length; i++) {
+				var goal = joint.util.breakText(usageGoals[i].name, {
+					width : 150,
+					height : 50
+				});
+				var is_it_there = 0;
+				if (elements !== null && elements !== undefined
+						&& elements.length !== 0) {
+					for (var index = 0; index < elements.length; index++) {
+
+						if (elements[index].attributes.type === 'org.Member'
+								&& elements[index].attributes.attrs['.card'].fill === '#feb563') {
+
+							if (goal.toLowerCase() === elements[index].attributes.attrs.text.text
+									.toLowerCase()) {
+								is_it_there = 1;
+								break;
+							}
+						}
+					}
+					if (is_it_there === 0) {
+						ug[i] = member(x + i * x_dist, y + 2 * y_dist, goal,
+								'#feb563');
+					}
+
+				} else {
+					ug[i] = member(x + i * x_dist, y + 2 * y_dist, goal,
+							'#feb563');
+				}
 			}
 
-			for (var i = 0; i < usageGoals.length; i++) {
+			// Deleting Old System Goals which are deleted by the user
+			if (elements !== null && elements !== undefined
+					&& elements.length !== 0) {
+
+				for (var index = 0; index < elements.length; index++) {
+
+					var is_it_there = 0;
+
+					if (elements[index].attributes.type === 'org.Member'
+							&& elements[index].attributes.attrs['.card'].fill === '#feb563') {
+
+						for (var i = 0; i < usageGoals.length; i++) {
+
+							var goal = joint.util.breakText(usageGoals[i].name,
+									{
+										width : 150,
+										height : 50
+									});
+
+							if (goal.toLowerCase() === elements[index].attributes.attrs.text.text
+									.toLowerCase()) {
+								is_it_there = 1;
+								break;
+							}
+						}
+						if (is_it_there == 0) {
+							elements[index].remove();
+						}
+					}
+				}
+			}
+
+			/* for (var i = 0; i < usageGoals.length; i++) {
 				
 				var u_goal = joint.util.breakText(usageGoals[i].name, {
 					width : 150,
@@ -326,8 +449,8 @@
 				if (elements !== null && elements !== undefined && elements.length !== 0) {
 					for (var index = 0; index < elements.length; index++) {
 						if (elements[index].attributes.type!== 'org.Member') {
-							/* console.log(elements[index].attributes.attrs.text.text.toLowerCase() === u_goal.toLowerCase())
-							console.log(elements[index].attributes.attrs.text.text.toLowerCase()); */
+							console.log(elements[index].attributes.attrs.text.text.toLowerCase() === u_goal.toLowerCase())
+							console.log(elements[index].attributes.attrs.text.text.toLowerCase());
 							if (elements[index].attributes.attrs.text.text.toLowerCase() === u_goal.toLowerCase()) {
 								ug[i] = member(x + i * x_dist, y + 2 * y_dist, u_goal, '#feb563');
 							}								
@@ -336,54 +459,12 @@
 				} else {
 					ug[i] = member(x + i * x_dist, y + 2 * y_dist, u_goal, '#feb563');
 				}
-			}
+			} */
 
 		} else {
-			console.log("Sorry, No Web Storage Support Available on the browser!");
+			console
+					.log("Sorry, No Web Storage Support Available on the browser!");
 		}
-
-		/* sustainabilityDimensions = [ 'Individual Sustainability',
-				'Social Sustainability', 'Economic Sustainability',
-				'Enviornmental Sust.', 'Technical Sust.' ];
-		for (var goalTitles = 0; goalTitles < 5; goalTitles++) {
-			sustDimensions(dim_x + goalTitles * dim_x_dist, dim_y,
-					sustainabilityDimensions[goalTitles]);
-		}
-
-		// retrieve the goals back from local storage 
-		var goals = JSON.parse(localStorage.getItem("goals"));
-		console.log(goals);
-
-		var businessGoals = goals.businessGoals;
-		console.log(businessGoals);
-
-		var systemGoals = goals.systemGoals;
-		console.log(systemGoals);
-
-		var usageGoals = goals.usageGoals;
-		console.log(usageGoals);
-
-		var x = 100, y = 70, x_dist = 250, y_dist = 150;
-
-		var bg = new Array(), sg = new Array(), ug = new Array();
-
-		for (var i = 0; i < businessGoals.length; i++) {
-			console.log(businessGoals[i].name);
-			bg[i] = member(x + i * x_dist, y, businessGoals[i].name, '#30d0c6');
-		}
-
-		for (var i = 0; i < systemGoals.length; i++) {
-			console.log(systemGoals[i].name);
-			sg[i] = member(x + i * x_dist, y + y_dist, systemGoals[i].name,
-					'#7c68fd');
-		}
-
-		for (var i = 0; i < usageGoals.length; i++) {
-			console.log(usageGoals[i].name);
-			ug[i] = member(x + i * x_dist, y + 2 * y_dist, usageGoals[i].name,
-					'#feb563');
-			;
-		} */
 	</script>
 </body>
 </html>
