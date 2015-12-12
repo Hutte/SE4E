@@ -5,7 +5,6 @@ se4sToolkitApp.controller('OnlineEditorCtrl', [ '$scope', function($scope) {
 	$scope.usageGoals = [];
 	
 	var goals = JSON.parse(localStorage.getItem("goals"));
-	
 	if (goals !== null && goals !== undefined) {
 		if (goals.businessGoals) {
 			$scope.businessGoals = goals.businessGoals;
@@ -49,8 +48,7 @@ se4sToolkitApp.controller('OnlineEditorCtrl', [ '$scope', function($scope) {
 
 	$scope.removeUsageGoal = function(index) {
 		$scope.usageGoals.splice(index, 1);
-	};
-	
+	};	
 
 	$scope.saveToPc = function(data, filename) {
 
@@ -98,7 +96,7 @@ se4sToolkitApp.controller('OnlineEditorCtrl', [ '$scope', function($scope) {
 			console.log("Sorry, No Web Storage Support Available on the browser!");
 		}
 		
-		var path = "tool.html";
+		var path = "goal-model.html";
 		window.location.href = path;		
 	}
 }]);
